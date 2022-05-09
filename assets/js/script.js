@@ -33,7 +33,6 @@ var loadTasks = function() {
 
   // loop over object properties
   $.each(tasks, function(list, arr) {
-    console.log(list, arr);
     // then loop over sub-array
     arr.forEach(function(task) {
       createTask(task.text, task.date, list);
@@ -44,6 +43,53 @@ var loadTasks = function() {
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+
+//mod 5.1.6 - makes field for tasks editable
+$(".list-group").on("click", "p", function() {
+  var text = $(this)
+  .text()
+  .trim();
+  console.log(text);
+
+  var textInput = $("<textarea>")
+  .addClass("form-control")
+  .val(text);
+
+  $(this).replaceWith(textInput);
+  textInput.trigger("focus");
+});
+
+//mod 5.1.6 - listener to save edited task
+$(".list-group").on("blur", "p", function() {
+  //get text area's current value/text
+  var text = $(this)
+  .val()
+  .trim();
+
+  //get the parent ul's id attribut
+  var status = $(this)
+  .closest(".list-group")
+  .attr("id")
+  .replace("list-", "");
+
+  //get the task's position in the list of other li elements
+  var index = $(this)
+  .closest("list-group-item")
+  .index();
+
+  tasks[status][index].text = text;
+  saveTasks();
+
+  //recreate p element
+  var taskP = $("<p>")
+  .addClass("m-1")
+  .text(text);
+
+  //replace textarea with p element
+  $(this).replaceWith(taskP);
+})
+
+
 
 
 
